@@ -12,11 +12,17 @@
                     v-model="requestType" 
                     :option="requestOption" 
                     class="requests__select"/>
-                <custom-input 
+                <input 
                     v-model="requestURL" 
                     placeholder="Enter URL" 
-                    class="requests__input"/>
-                <blue-custom-button class="requests__btn" @click="cons()">Send</blue-custom-button>
+                    class="requests__input"
+                >
+                <blue-custom-button 
+                    class="requests__btn" 
+                    @click="send()"
+                >
+                Send
+                </blue-custom-button>
             </div>
             <params-request :data="data" class='workspaces__params'/>
         </div>

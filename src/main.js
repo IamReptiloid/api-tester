@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import components from '@/components/UI';
+import components from '@/shared/UIComponents';
 
 const app = createApp(App);
 components.forEach(component => {
