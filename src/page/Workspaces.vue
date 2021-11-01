@@ -8,21 +8,26 @@
             <div class="workspaces__url">{{URLWithData}}</div>
             <div v-if="!URLWithData" class="workspaces__url">URL</div>
             <div class="workspaces__input requests">
-                <custom-select 
-                    v-model="requestType" 
-                    :option="requestOption" 
-                    class="requests__select"/>
+                <select @change="changeOption" class="requests__select">
+                    <option
+                        v-for="(option, index) in requestOption"
+                        :key="index"
+                        :value="option"
+                    >
+                        {{ option }}
+                    </option>   
+                </select>
                 <input 
                     v-model="requestURL" 
                     placeholder="Enter URL" 
                     class="requests__input"
                 >
-                <blue-custom-button 
-                    class="requests__btn" 
+                <button 
+                    class="requests__btn blue-btn" 
                     @click="send()"
                 >
                 Send
-                </blue-custom-button>
+                </button>
             </div>
             <params-request :data="data" class='workspaces__params'/>
         </div>
@@ -31,29 +36,54 @@
 </template>
 
 <script>
-    import {request} from '@/services/request';
     import {defineAsyncComponent} from 'vue';
-    import URL from '@/services/URL';
+    import axios from 'axios';
 
     export default {
+        data: () => ({
+            requestType: '',
+            requestOption: [
+                'Get', 'Post'
+            ],
+            requestURL: '',
+            data: [{key: '', value: '', disable: false}],
+        }),
+
+        methods: {
+            send() {
+                console.log(axios[this.requestType](this.URLWithData))
+            },
+
+            changeOption(event) {
+                this.requestType = event.target.value.toLowerCase()
+            },
+        },
+
+        computed: {
+            URLWithData() {
+                let temp = this.requestURL
+
+                if(!this.data.length == 0) {
+                    temp = temp + '?'
+                    this.data.forEach(element => {
+                        if(element.disable){
+                            temp  = temp + element.key + '=' + element.value + '&'
+                        }
+                });
+                    temp = temp.slice(0, temp.length - 1);
+                }
+                
+                return temp;  
+            },
+        },
+        
+        mounted() {
+            this.requestType = this.requestOption[0].toLowerCase();
+        },
+
         components: { 
             ParamsRequest: defineAsyncComponent(() => import('../shared/components/ParamsRequest.vue')) 
         },
-
-        setup() {
-
-            const {requestURL, data, URLWithData} = URL();
-            const {requestType, cons, requestOption} = request(URLWithData);
-
-            return {
-                requestOption,
-                requestURL,
-                data,
-                URLWithData,
-                requestType,
-                cons,
-            }
-        }, 
     }
 </script>
 

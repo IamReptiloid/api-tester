@@ -21,21 +21,16 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
 // initial configuration
 body {
 	background: rgb(255,255,255);
-    font-family: inter;
+    font-size: 12px;
+    font-family: 'Inter';
+    font-style: normal;
 }
-// .wrapper {
-// 	min-height: 100%;
-// 	overflow: hidden;
-// 	display: flex;
-// 	flex-direction: column;
-// }
-// .content {
-// 	display: flex;
-// 	flex-direction: column;
-// 	flex: 1 1 auto;
-// }
-// .container {
-// 	max-width: 1140px;
-// 	padding: 0 20px;
-// 	margin: 0 auto;
-// }
+
+.blue-btn {
+    background-color: rgb(9, 123, 237);
+    color: #fff;
+    border-radius: 5px;
+    &:hover {
+        background-color: rgb(0, 104, 207);
+    }
+}

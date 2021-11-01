@@ -6,20 +6,16 @@
 </template>
 
 <script>
-import CustomNav from '@/shared/components/CustomNav'
+import {defineAsyncComponent} from 'vue';
 
 export default({
   components: {
-    CustomNav,
+    CustomNav: defineAsyncComponent(() => import('@/shared/components/CustomNav')) 
   }
 })
 </script>
 
 
 <style src='@/styles/config.scss' lang="scss">
-  body {
-    font-size: 12px;
-    font-family: 'Inter';
-    font-style: normal;
-  }
+  
 </style>
