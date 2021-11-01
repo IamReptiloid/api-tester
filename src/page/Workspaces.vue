@@ -37,48 +37,29 @@
 
 <script>
     import {defineAsyncComponent} from 'vue';
-    import axios from 'axios';
+    import {request} from '@/services/request'; 
 
     export default {
-        data: () => ({
-            requestType: '',
-            requestOption: [
-                'Get', 'Post'
-            ],
-            requestURL: '',
-            data: [{key: '', value: '', disable: false}],
-        }),
+        setup() {
+            const {
+                requestType, 
+                requestOption, 
+                requestURL,
+                data,
+                URLWithData, 
+                changeOption, 
+                send
+            } = request()
 
-        methods: {
-            send() {
-                console.log(axios[this.requestType](this.URLWithData))
-            },
-
-            changeOption(event) {
-                this.requestType = event.target.value.toLowerCase()
-            },
-        },
-
-        computed: {
-            URLWithData() {
-                let temp = this.requestURL
-
-                if(!this.data.length == 0) {
-                    temp = temp + '?'
-                    this.data.forEach(element => {
-                        if(element.disable){
-                            temp  = temp + element.key + '=' + element.value + '&'
-                        }
-                });
-                    temp = temp.slice(0, temp.length - 1);
-                }
-                
-                return temp;  
-            },
-        },
-        
-        mounted() {
-            this.requestType = this.requestOption[0].toLowerCase();
+            return {
+                requestType, 
+                requestOption, 
+                requestURL,
+                data,
+                URLWithData, 
+                changeOption, 
+                send
+            }
         },
 
         components: { 
