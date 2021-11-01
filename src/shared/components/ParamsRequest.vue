@@ -37,29 +37,29 @@
 </template>
 
 <script>
-    export default {
-        props: {
-            data: {
-                type: Array,
-            }
-        },
+export default {
+    props: {
+        data: {
+            type: Array,
+        }
+    },
 
-        methods: {
-            addParams(index, event) {
-                if(index === this.data.length - 1) {
-                    this.data.push({
-                        key: event.target.placeholder == 'KEY'? event.target.value : '',
-                        value: event.target.placeholder == 'VALUE'? event.target.value : '',
-                        disable: false,
-                    });
-                    // console.log(this.data[this.data.length - 1].key)
-                    this.data[this.data.length - 1].key = '';
-                    this.data[this.data.length - 1].value = '';
-                    this.data[this.data.length - 2].disable = true;
-                }
+    methods: {
+        addParams(index, event) {
+            if(index === this.data.length - 1) {
+                this.data.push({
+                    key: event.target.placeholder == 'KEY'? event.target.value : '',
+                    value: event.target.placeholder == 'VALUE'? event.target.value : '',
+                    disable: false,
+                });
+                // console.log(this.data[this.data.length - 1].key)
+                this.data[this.data.length - 1].key = '';
+                this.data[this.data.length - 1].value = '';
+                this.data[this.data.length - 2].disable = true;
             }
         }
     }
+}
 </script>
 
 <style lang="scss" scoped>

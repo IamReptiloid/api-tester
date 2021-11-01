@@ -2,16 +2,10 @@
     <nav class="nav">
         <div class="nav__content">
             <button @click="$router.push('/')" class="nav__btn">Home</button>
-            <button @click="$router.push('/Workspaces')" class="nav__btn">Workspaces</button>
+            <button @click="$router.push('/workspaces')" class="nav__btn">Workspaces</button>
         </div>
     </nav>
 </template>
-
-<script>
-    export default {
-        
-    }
-</script>
 
 <style lang="scss" scoped>
     .nav {

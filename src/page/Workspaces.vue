@@ -36,63 +36,63 @@
 </template>
 
 <script>
-    import {defineAsyncComponent} from 'vue';
-    import {ref, onMounted, reactive, computed} from 'vue'
-    import axios from 'axios';
+import {defineAsyncComponent} from 'vue';
+import {ref, onMounted, reactive, computed} from 'vue'
+import axios from 'axios';
 
 
-    export default {
-        setup() {
-            const requestType = ref('');
-            const requestOption = [ 'Get', 'Post'];
-            const requestURL = ref('');
-            const data = reactive([{key: '', value: '', disable: false}]);
+export default {
+    setup() {
+        const requestType = ref('');
+        const requestOption = [ 'Get', 'Post'];
+        const requestURL = ref('');
+        const data = reactive([{key: '', value: '', disable: false}]);
 
-            const URLWithData = computed(() => {
-                let temp = requestURL.value;
+        const URLWithData = computed(() => {
+            let temp = requestURL.value;
 
-                if(!data.length == 0) {
-                    temp = temp + '?';
-                    data.forEach(element => {
-                        if(element.disable){
-                            temp  = temp + element.key + '=' + element.value + '&';
-                        };
-                });
-                    temp = temp.slice(0, temp.length - 1);
-                }
-                
-                return temp;
+            if(!data.length == 0 && temp) {
+                temp = temp + '?';
+                data.forEach(element => {
+                    if(element.disable){
+                        temp  = temp + element.key + '=' + element.value + '&';
+                    };
             });
-
-            const changeOption = (event) => {
-                requestType.value = event.target.value.toLowerCase()
-            };
-
-            const send = async() => {
-                try {
-                    console.log(await axios[requestType.value](URLWithData.value))
-                } catch(error) {
-                    console.log('error')
-                }
+                temp = temp.slice(0, temp.length - 1);
             }
+            
+            return temp;
+        });
 
-            onMounted(() => {requestType.value = requestOption[0].toLowerCase()})
+        const changeOption = (event) => {
+            requestType.value = event.target.value.toLowerCase()
+        };
 
-            return {
-                requestType,
-                requestOption,
-                requestURL,
-                data,
-                URLWithData,
-                changeOption,
-                send,
+        const send = async() => {
+            try {
+                console.log(await axios[requestType.value](URLWithData.value))
+            } catch(error) {
+                console.log('error')
             }
-        },
+        }
 
-        components: { 
-            ParamsRequest: defineAsyncComponent(() => import('../shared/components/ParamsRequest.vue')) 
-        },
-    }
+        onMounted(() => {requestType.value = requestOption[0].toLowerCase()})
+
+        return {
+            requestType,
+            requestOption,
+            requestURL,
+            data,
+            URLWithData,
+            changeOption,
+            send,
+        }
+    },
+
+    components: { 
+        ParamsRequest: defineAsyncComponent(() => import('../shared/components/ParamsRequest.vue')) 
+    },
+}
 </script>
 
 <style lang="scss" scoped>
