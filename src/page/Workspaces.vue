@@ -29,7 +29,7 @@
                     Send
                 </button>
             </div>
-            <params-request :data="data" class='workspaces__params'/>
+            <params-request :data="data" class='workspaces__params' @add="addData"/>
             <div class="workspaces__space"></div>
             <p class="workspaces__response">Response</p>
             <response :data="answer.value" class="workspaces__answer"/>
@@ -50,6 +50,18 @@ export default {
         const requestURL = ref('');
         const data = reactive([{key: '', value: '', disable: false}]);
         const answer = reactive({})
+
+        const addData = (event) => {
+            console.log(data)
+            data.push({
+                key: event.placeholder == 'KEY'? event.value : '',
+                value: event.placeholder == 'VALUE'? event.value : '',
+                disable: false,
+            });
+            data[data.length - 1].key = '';
+            data[data.length - 1].value = '';
+            data[data.length - 2].disable = true;
+        }
 
         const URLWithData = computed(() => {
             let temp = requestURL.value;
@@ -92,6 +104,7 @@ export default {
             changeOption,
             send,
             answer,
+            addData,
         }
     },
 

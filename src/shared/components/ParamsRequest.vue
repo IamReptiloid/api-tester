@@ -47,14 +47,7 @@ export default {
     methods: {
         addParams(index, event) {
             if(index === this.data.length - 1) {
-                this.data.push({
-                    key: event.target.placeholder == 'KEY'? event.target.value : '',
-                    value: event.target.placeholder == 'VALUE'? event.target.value : '',
-                    disable: false,
-                });
-                this.data[this.data.length - 1].key = '';
-                this.data[this.data.length - 1].value = '';
-                this.data[this.data.length - 2].disable = true;
+                this.$emit('add', event.target)
             }
         }
     }
