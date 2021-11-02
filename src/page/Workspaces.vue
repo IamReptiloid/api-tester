@@ -1,11 +1,11 @@
 <template>
     <div class="workspaces">
         <div class="workspaces__history history">
-
+            
         </div>
 
         <div class="workspaces__section">
-            <div class="workspaces__url">{{URLWithData}}</div>
+            <div v-if="URLWithData" class="workspaces__url">{{URLWithData}}</div>
             <div v-if="!URLWithData" class="workspaces__url">URL</div>
             <div class="workspaces__input requests">
                 <select @change="changeOption" class="requests__select">
@@ -26,10 +26,13 @@
                     class="requests__btn blue-btn" 
                     @click="send()"
                 >
-                Send
+                    Send
                 </button>
             </div>
             <params-request :data="data" class='workspaces__params'/>
+            <div class="workspaces__space"></div>
+            <p class="workspaces__response">Response</p>
+            <test-g :data="answer" class="workspaces__answer"/>
         </div>
         
     </div>
@@ -40,13 +43,13 @@ import {defineAsyncComponent} from 'vue';
 import {ref, onMounted, reactive, computed} from 'vue'
 import axios from 'axios';
 
-
 export default {
     setup() {
         const requestType = ref('');
-        const requestOption = [ 'Get', 'Post'];
+        const requestOption = [ 'GET', 'POST'];
         const requestURL = ref('');
         const data = reactive([{key: '', value: '', disable: false}]);
+        const answer = reactive({})
 
         const URLWithData = computed(() => {
             let temp = requestURL.value;
@@ -70,9 +73,10 @@ export default {
 
         const send = async() => {
             try {
-                console.log(await axios[requestType.value](URLWithData.value))
+                answer.value = await axios[requestType.value](URLWithData.value);
+                answer.value = answer.value.data;
             } catch(error) {
-                console.log('error')
+                alert('error')
             }
         }
 
@@ -86,11 +90,13 @@ export default {
             URLWithData,
             changeOption,
             send,
+            answer,
         }
     },
 
     components: { 
-        ParamsRequest: defineAsyncComponent(() => import('../shared/components/ParamsRequest.vue')) 
+        ParamsRequest: defineAsyncComponent(() => import('../shared/components/ParamsRequest.vue')),
+        TestG: defineAsyncComponent(() => import('@/shared/components/TestG')),
     },
 }
 </script>
@@ -98,19 +104,40 @@ export default {
 <style lang="scss" scoped>
     .workspaces {
         display: flex;
+        &__answer {
+            margin: 0 0 8px 5px;
+        }
         &__section {
+            padding: 40px 0 0 0;
             flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
         };
+        &__space {
+            flex: 1 1 auto;
+        }
         &__history {
-            flex-basis: 300px;
+            padding: 40px 0 0 0;
+            min-width: 300px;
             background-color: #f2f2f2;
-            height: 100vh;
+            min-height: 100vh;
         };
         &__url {
             margin: 5px;
         };
         &__params {
             margin: 0 0 0 5px;
+        };
+        &__response {
+            margin: 0 0 0 5px;
+            &::after {
+                padding: 8px 0 0 0;
+                content: '';
+                border-bottom: 1px solid rgb(230,230,230);
+                height: 1px;
+                display: block;
+                width: 100%;
+            }
         }
     }
     .requests {
@@ -125,7 +152,7 @@ export default {
             background-color: #f2f2f2;
         };
         &__btn {
-            margin: 0 0 0 5px;
+            margin: 0 5px 0 5px;
             padding: 10px;
             font-size: 14px;
         };

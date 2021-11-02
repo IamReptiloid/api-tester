@@ -9,7 +9,9 @@
 
 <style lang="scss" scoped>
     .nav {
+        position: absolute;
         width: 100%;
+        background-color: #fff;
         color: rgb(131, 131, 131);
         font-weight: 600;
         font-size: 14px;

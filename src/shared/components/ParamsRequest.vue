@@ -52,7 +52,6 @@ export default {
                     value: event.target.placeholder == 'VALUE'? event.target.value : '',
                     disable: false,
                 });
-                // console.log(this.data[this.data.length - 1].key)
                 this.data[this.data.length - 1].key = '';
                 this.data[this.data.length - 1].value = '';
                 this.data[this.data.length - 2].disable = true;
@@ -64,7 +63,7 @@ export default {
 
 <style lang="scss" scoped>
     table {
-        width: 100%;
+        width: 99%;
     }
     th {
         text-align: left;
