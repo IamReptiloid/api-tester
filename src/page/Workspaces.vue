@@ -32,7 +32,7 @@
             <params-request :data="data" class='workspaces__params'/>
             <div class="workspaces__space"></div>
             <p class="workspaces__response">Response</p>
-            <test-g :data="answer" class="workspaces__answer"/>
+            <response :data="answer.value" class="workspaces__answer"/>
         </div>
         
     </div>
@@ -75,6 +75,7 @@ export default {
             try {
                 answer.value = await axios[requestType.value](URLWithData.value);
                 answer.value = answer.value.data;
+                console.log(answer.value)
             } catch(error) {
                 alert('error')
             }
@@ -96,7 +97,7 @@ export default {
 
     components: { 
         ParamsRequest: defineAsyncComponent(() => import('../shared/components/ParamsRequest.vue')),
-        TestG: defineAsyncComponent(() => import('@/shared/components/TestG')),
+        Response: defineAsyncComponent(() => import('@/shared/components/Response')),
     },
 }
 </script>
