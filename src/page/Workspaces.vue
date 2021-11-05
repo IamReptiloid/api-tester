@@ -29,7 +29,26 @@
                     Send
                 </button>
             </div>
-            <params-request :data="data" class='workspaces__params' @add="addData"/>
+            
+            <div class="workspaces__nav">
+                <button 
+                    class="workspaces__nav-btn" 
+                    v-for="(tab, index) in tabs"
+                    :key="index"
+                    @click="changeParam(index)" 
+                    :class="{active: (activeId == index)}"
+                >
+                 {{tab}}
+                </button>
+            </div>
+            <params-request 
+                :data="data" 
+                class='workspaces__params' 
+                @add="addData"
+                v-if="activeId == 0"
+            />
+            <textarea v-if="activeId == 1" class="workspaces__body textarea" v-model="dataBody"></textarea>
+
             <div class="workspaces__space"></div>
             <p class="workspaces__response">Response</p>
             <response :data="answer.value" class="workspaces__answer"/>
@@ -46,10 +65,13 @@ import axios from 'axios';
 export default {
     setup() {
         const requestType = ref('');
-        const requestOption = [ 'GET', 'POST'];
+        const requestOption = [ 'GET', 'POST', 'PUT', 'PATCH'];
         const requestURL = ref('');
         const data = reactive([{key: '', value: '', disable: false}]);
-        const answer = reactive({})
+        const answer = reactive({});
+        const activeId = ref(0);
+        const tabs = reactive(['Params', 'Body']);
+        const dataBody = ref('');
 
         const addData = (event) => {
             console.log(data)
@@ -83,19 +105,35 @@ export default {
             requestType.value = event.target.value.toLowerCase()
         };
 
+        const parseDataBody = () => {
+            return dataBody.value.split('\n').join('');
+        }
+
         const send = async() => {
             try {
-                answer.value = await axios[requestType.value](URLWithData.value);
+                let data = {};
+                try {
+                    data = JSON.parse(parseDataBody())
+                } catch {
+                }
+                answer.value = await axios[requestType.value](URLWithData.value, data);
                 answer.value = answer.value.data;
-                console.log(answer.value)
             } catch(error) {
                 alert('error')
             }
+        };
+
+        const changeParam = (index) => {
+            activeId.value = index;
         }
 
         onMounted(() => {requestType.value = requestOption[0].toLowerCase()})
 
         return {
+            dataBody,
+            activeId,
+            tabs,
+            changeParam,
             requestType,
             requestOption,
             requestURL,
@@ -152,6 +190,17 @@ export default {
                 display: block;
                 width: 100%;
             }
+        };
+        &__nav {
+            margin: 0 0 5px 6px;
+            display: flex;
+            column-gap: 24px;
+        }
+        &__nav-btn {
+            background-color: #fff;
+        };
+        &__body {
+            flex: 10 10 auto;
         }
     }
     .requests {
@@ -177,5 +226,24 @@ export default {
             border: 1px solid #d1d1d1;
             border-right: 0px;
         }
+    }
+    .active {
+        &::after {
+            content: '';
+            border-bottom: 1px solid rgb(255, 108, 55);
+            height: 1px;
+            display: block;
+            width: 100%;
+        }
+    }
+    .textarea {
+        resize: none;
+        margin: 0  5px 0 5px;
+        letter-spacing: 1px;
+        padding: 10px;
+        line-height: 1.5;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-shadow: 1px 1px 1px #999;
     }
 </style>
