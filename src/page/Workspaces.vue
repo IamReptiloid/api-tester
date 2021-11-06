@@ -47,11 +47,22 @@
                 @add="addData"
                 v-if="activeId == 0"
             />
-            <textarea v-if="activeId == 1" class="workspaces__body textarea" v-model="dataBody"></textarea>
+            <textarea 
+                @keydown="$event.key == 'Tab'? $event.preventDefault(): $event" 
+                v-if="activeId == 1" 
+                class="workspaces__body textarea" 
+                v-model="dataBody"
+            >
+            </textarea>
 
             <div class="workspaces__space"></div>
             <p class="workspaces__response">Response</p>
-            <response :data="answer.value" class="workspaces__answer"/>
+            <response 
+                v-if="answer.value" 
+                :data="answer.value" 
+                class="workspaces__answer"
+            />
+            <div v-else class="workspaces__answer-empty"></div>
         </div>
         
     </div>
@@ -112,14 +123,21 @@ export default {
         const send = async() => {
             try {
                 let data = {};
-                try {
-                    data = JSON.parse(parseDataBody())
-                } catch {
+                if(requestType.value == 'get') {
+                    console.log(requestType.value)
+                    answer.value = await axios[requestType.value](URLWithData.value);
+                } 
+                else {
+                    try {
+                        data = JSON.parse(parseDataBody());
+                    } catch {
+                        alert('the request body was entered incorrectly');
+                    }
+                    answer.value = await axios[requestType.value](URLWithData.value, data);
                 }
-                answer.value = await axios[requestType.value](URLWithData.value, data);
                 answer.value = answer.value.data;
             } catch(error) {
-                alert('error')
+                alert('error');
             }
         };
 
@@ -158,7 +176,10 @@ export default {
         display: flex;
         &__answer {
             margin: 0 0 8px 5px;
-        }
+        };
+        &__answer-empty {
+            min-height: 500px;
+        };
         &__section {
             padding: 40px 0 0 0;
             flex: 1 1 auto;
