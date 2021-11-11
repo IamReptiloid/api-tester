@@ -24,7 +24,7 @@
                 >
                 <button 
                     class="requests__btn blue-btn" 
-                    @click="send()"
+                    @click="send(this)"
                 >
                     Send
                 </button>
@@ -48,7 +48,8 @@
                 v-if="activeId == 0"
             />
             <textarea 
-                @keydown="$event.key == 'Tab'? $event.preventDefault(): $event" 
+                ref="textarea"
+                @keydown="enterTab(this.$refs.textarea, $event)" 
                 v-if="activeId == 1" 
                 class="workspaces__body textarea" 
                 v-model="dataBody"
@@ -64,16 +65,19 @@
             />
             <div v-else class="workspaces__answer-empty"></div>
         </div>
-        
+        <notifications position="bottom right"/>
     </div>
 </template>
 
 <script>
 import {defineAsyncComponent} from 'vue';
-import {ref, onMounted, reactive, computed} from 'vue'
+import {ref, onMounted, reactive, computed} from 'vue';
 import axios from 'axios';
+import Ajv from "ajv";
 
 export default {
+    methods: {
+    },
     setup() {
         const requestType = ref('');
         const requestOption = [ 'GET', 'POST', 'PUT', 'PATCH'];
@@ -120,7 +124,7 @@ export default {
             return dataBody.value.split('\n').join('');
         }
 
-        const send = async() => {
+        const send = async(th) => {
             try {
                 let data = {};
                 if(requestType.value == 'get') {
@@ -130,24 +134,47 @@ export default {
                 else {
                     try {
                         data = JSON.parse(parseDataBody());
+
                     } catch {
-                        alert('the request body was entered incorrectly');
+                        th.$notify({
+                            title: "Error",
+                            text: "The request body was entered incorrectly!",
+                            type: 'error'
+                        });
                     }
                     answer.value = await axios[requestType.value](URLWithData.value, data);
                 }
                 answer.value = answer.value.data;
             } catch(error) {
-                alert('error');
+                th.$notify({
+                    title: "Error",
+                    text: "404",
+                    type: 'error'
+                });
             }
         };
 
         const changeParam = (index) => {
             activeId.value = index;
+        };
+
+        const enterTab = (ref, event) => {
+            if (event.key == 'Tab') {
+                event.preventDefault();
+                let start = ref.selectionStart;
+                let end = ref.selectionEnd;
+
+                ref.value = ref.value.substring(0, start) +
+                "\t" + ref.value.substring(end);
+
+                ref.selectionEnd = start + 1;
+            }
         }
 
         onMounted(() => {requestType.value = requestOption[0].toLowerCase()})
 
         return {
+            enterTab,
             dataBody,
             activeId,
             tabs,
@@ -222,7 +249,7 @@ export default {
         };
         &__body {
             flex: 10 10 auto;
-        }
+        };
     }
     .requests {
         display: flex;
