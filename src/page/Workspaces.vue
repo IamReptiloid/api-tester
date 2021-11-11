@@ -45,12 +45,12 @@
                 :data="data" 
                 class='workspaces__params' 
                 @add="addData"
-                v-if="activeId == 0"
+                v-if="activeId === 0"
             />
             <textarea 
                 ref="textarea"
                 @keydown="enterTab(this.$refs.textarea, $event)" 
-                v-if="activeId == 1" 
+                v-if="activeId === 1" 
                 class="workspaces__body textarea" 
                 v-model="dataBody"
             >
@@ -91,8 +91,8 @@ export default {
         const addData = (event) => {
             console.log(data)
             data.push({
-                key: event.placeholder == 'KEY'? event.value : '',
-                value: event.placeholder == 'VALUE'? event.value : '',
+                key: event.placeholder === 'KEY'? event.value : '',
+                value: event.placeholder === 'VALUE'? event.value : '',
                 disable: false,
             });
             data[data.length - 1].key = '';
@@ -103,7 +103,7 @@ export default {
         const URLWithData = computed(() => {
             let temp = requestURL.value;
 
-            if(!data.length == 0 && temp) {
+            if(!data.length === 0 && temp) {
                 temp = temp + '?';
                 data.forEach(element => {
                     if(element.disable){
@@ -127,7 +127,7 @@ export default {
         const send = async(th) => {
             try {
                 let data = {};
-                if(requestType.value == 'get') {
+                if(requestType.value === 'get') {
                     console.log(requestType.value)
                     answer.value = await axios[requestType.value](URLWithData.value);
                 } 
@@ -159,7 +159,7 @@ export default {
         };
 
         const enterTab = (ref, event) => {
-            if (event.key == 'Tab') {
+            if (event.key === 'Tab') {
                 event.preventDefault();
                 let start = ref.selectionStart;
                 let end = ref.selectionEnd;
