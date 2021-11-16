@@ -53,6 +53,7 @@
                 v-if="activeId === 1" 
                 class="workspaces__body textarea" 
                 v-model="dataBody"
+                @blur="parseToJSON(this)"
             >
             </textarea>
 
@@ -122,26 +123,32 @@ export default {
 
         const parseDataBody = () => {
             return dataBody.value.split('\n').join('');
+        };
+
+        const parseToJSON = (th) => {
+            let data = {};
+            try {
+                data = JSON.parse(parseDataBody());
+
+            } catch {
+                th.$notify({
+                    title: "Error",
+                    text: "The request body was entered incorrectly!",
+                    type: 'error'
+                });
+
+            } finally {
+                return data
+            }
         }
 
         const send = async(th) => {
             try {
-                let data = {};
                 if(requestType.value === 'get') {
                     console.log(requestType.value)
                     answer.value = await axios[requestType.value](URLWithData.value);
-                } 
-                else {
-                    try {
-                        data = JSON.parse(parseDataBody());
-
-                    } catch {
-                        th.$notify({
-                            title: "Error",
-                            text: "The request body was entered incorrectly!",
-                            type: 'error'
-                        });
-                    }
+                } else {
+                    let data = parseToJSON(th)
                     answer.value = await axios[requestType.value](URLWithData.value, data);
                 }
                 answer.value = answer.value.data;
@@ -169,11 +176,12 @@ export default {
 
                 ref.selectionEnd = start + 1;
             }
-        }
+        };
 
         onMounted(() => {requestType.value = requestOption[0].toLowerCase()})
 
         return {
+            parseToJSON,
             enterTab,
             dataBody,
             activeId,
