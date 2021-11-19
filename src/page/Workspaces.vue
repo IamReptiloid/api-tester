@@ -25,8 +25,8 @@
                 <button 
                     class="requests__btn blue-btn" 
                     @click="send(this)"
-                    :disabled="!parseToJSONBool"
-                    :class="{disable: (!parseToJSONBool)}"
+                    :disabled="!parseToJSONBool && (requestType != 'get')"
+                    :class="{disable: (!parseToJSONBool && (requestType !== 'get'))}"
                 >
                     Send
                 </button>
