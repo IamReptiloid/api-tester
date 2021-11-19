@@ -25,6 +25,8 @@
                 <button 
                     class="requests__btn blue-btn" 
                     @click="send(this)"
+                    :disabled="!parseToJSONBool"
+                    :class="{disable: (!parseToJSONBool)}"
                 >
                     Send
                 </button>
@@ -36,7 +38,7 @@
                     v-for="(tab, index) in tabs"
                     :key="index"
                     @click="changeParam(index)" 
-                    :class="{active: (activeId == index)}"
+                    :class="{active: (activeId === index)}"
                 >
                  {{tab}}
                 </button>
@@ -53,7 +55,7 @@
                 v-if="activeId === 1" 
                 class="workspaces__body textarea" 
                 v-model="dataBody"
-                @blur="parseToJSON(this)"
+                @keyup="parseToJSON()"
             >
             </textarea>
 
@@ -74,7 +76,6 @@
 import {defineAsyncComponent} from 'vue';
 import {ref, onMounted, reactive, computed} from 'vue';
 import axios from 'axios';
-import Ajv from "ajv";
 
 export default {
     methods: {
@@ -88,6 +89,7 @@ export default {
         const activeId = ref(0);
         const tabs = reactive(['Params', 'Body']);
         const dataBody = ref('');
+        const parseToJSONBool = ref(false)
 
         const addData = (event) => {
             console.log(data)
@@ -125,30 +127,26 @@ export default {
             return dataBody.value.split('\n').join('');
         };
 
-        const parseToJSON = (th) => {
-            let data = {};
+        const parseToJSON = () => {
             try {
-                data = JSON.parse(parseDataBody());
-
+                JSON.parse(parseDataBody());
+                parseToJSONBool.value = true
             } catch {
-                th.$notify({
-                    title: "Error",
-                    text: "The request body was entered incorrectly!",
-                    type: 'error'
-                });
-
-            } finally {
-                return data
-            }
+                parseToJSONBool.value = false
+            } 
         }
 
         const send = async(th) => {
+            let data
             try {
                 if(requestType.value === 'get') {
-                    console.log(requestType.value)
                     answer.value = await axios[requestType.value](URLWithData.value);
                 } else {
-                    let data = parseToJSON(th)
+                    try {
+                        data = JSON.parse(parseDataBody());
+                    } catch {
+                        data = {};
+                    }
                     answer.value = await axios[requestType.value](URLWithData.value, data);
                 }
                 answer.value = answer.value.data;
@@ -181,6 +179,7 @@ export default {
         onMounted(() => {requestType.value = requestOption[0].toLowerCase()})
 
         return {
+            parseToJSONBool,
             parseToJSON,
             enterTab,
             dataBody,
@@ -301,5 +300,9 @@ export default {
         border-radius: 5px;
         border: 1px solid #ccc;
         box-shadow: 1px 1px 1px #999;
+    }
+
+    .disable {
+        background-color: #c7c7c7;
     }
 </style>
